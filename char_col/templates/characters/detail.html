@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Character Details</h1>
+
+<div class="row">
+  <div class="col s6">
+    <div class="card">
+      <div class="card-content">
+        <span class="card-title">{{ character.char_name }}</span>
+        <p>Class: {{ character.char_class }}</p>
+        <p>Race: {{ character.char_race }}</p>
+      </div>
+      <div class="card-action">
+        <a href="{% url 'update' character.id %}">Edit</a>
+        <a href="{% url 'delete' character.id %}">Delete</a>
+      </div>
+    </div>
+  </div>
+  <div class="col s6">
+    <form action="{% url 'add_campaign' character.id %}" method="post">
+      {% csrf_token %}
+      {{ campaign_form.as_p }}
+      <input type="submit" class="btn" value="Add Campaign">
+    </form>
+    <br>
+      <thead>
+        <tr><th>Date</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        {% for campaign in character.campaign_set.all %}
+          <tr>
+            <td>{{ campaign.date }}</td>
+            <td>{{ campaign.get_campaign_status }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<hr>
+<div class="row">
+  <div class="col s6">
+    <h3>{{ character.char_name }}'s Abilities</h3>
+    {% if character.abilities.count %}
+      {% for ability in character.abilities.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              <h5>{{ ability.abil_name }}</h5>
+              <p>{{ ability.abil_type }}</p>
+              <p>{{ ability.abil_damage }}</p>
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'remove_ability' character.id ability.id %}" method="post">
+                {% csrf_token %}
+              <button type="submit" class="btn">Remove</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>No Abilities to Display</h5>
+    {% endif %}
+  </div>
+  <div class="col s6">
+    <h3>Learnable Abilities</h3>
+    {% if abilities.count %}
+      {% for ability in abilities.all %}
+        <div class="card">
+          <div class="card-content">
+            <span class="card-title">
+              {{ ability.abil_name }}
+            </span>
+          </div>
+          <div class="card-action">
+            <form action="{% url 'add_ability' character.id ability.id %}" method="post">
+                {% csrf_token %}
+              <button type="submit" class="btn">Add</button>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    {% else %}
+      <h5>{{character.char_name}} Has Already Learned All Abilities</h5>
+    {% endif %}
+  </div>
+</div>
+
+
+<script>
+  var dateEl = document.getElementById('id_date');
+  M.Datepicker.init(dateEl, {
+    format: 'yyyy-mm-dd',
+    defaultDate: new Date(),
+    setDefaultDate: true,
+    autoClose: true
+  });
+
+  var selectEl = document.getElementById('id_ability');
+  A.FormSelect.init(selectEl);
+</script>
+{% endblock %}

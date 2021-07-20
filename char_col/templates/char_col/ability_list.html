@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<h1>Abilities List</h1>
+{% if ability_list.count %}
+  {% for ability in ability_list %}
+    <a href="{% url 'ability_detail' ability.id %}">
+      <div class="card">
+          <div class="card-content">
+              <span class="card-title">{{ ability.abil_name }}</span>
+              <p>Type: {{ ability.abil_type }}</p>
+              <p>Damage: {{ ability.abil_damage }}
+          </div>
+      </div>
+    </a>
+  {% endfor %}
+{% else %}
+<h3>There are no Abilities to Display</h3>
+{% endif %}
+
+{% endblock %}
